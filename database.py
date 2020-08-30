@@ -137,19 +137,21 @@ class CDNDatabase:
         else:
             return "Zone doesn't exist"
 
-    def get_zones(self, user):
-        user = ObjectId(user)
-
-        userdoc = self.users.find_one({"_id": user})
-        if not userdoc:
-            return "ERROR: User not found."
+    def get_zones(self, user_id: str) -> list:
+        """
+        Get all zones for a user
+        :param user_id: User ID
+        :return: list of authorized zones
+        """
 
         authorized_zones = []
 
-        zones = userdoc.get("zones")
-        if zones:
-            for zoneid in zones:
-                authorized_zones.append(self.zones.find_one({"_id": zoneid}))
+        if self._user_exists(user_id):
+            user_doc = self.users.find_one({"_id": ObjectId(user_id)})
+            user_zones = user_doc.get("zones")
+            if user_zones:
+                for zone_id in user_zones:
+                    authorized_zones.append(self.zones.find_one({"_id": zone_id}))
 
         return authorized_zones
 
