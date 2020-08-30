@@ -43,7 +43,7 @@ def index():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
-        return render_template("login.html")
+        return render_template("auth/login.html")
     elif request.method == "POST":
         userdoc = db.authenticated(request.form.get("username"), request.form.get("password"))
         if userdoc:
@@ -57,7 +57,7 @@ def login():
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "GET":
-        return render_template("signup.html")
+        return render_template("auth/signup.html")
     elif request.method == "POST":
         error = db.add_user(request.form.get("username"), request.form.get("password"))
         if error is None:
