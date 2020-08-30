@@ -74,25 +74,29 @@ class CDNDatabase:
 
     # End user methods
 
-    def add_zone(self, zone, user):
+    def add_zone(self, zone, user_id):
         """
         Add a zone
         :param zone: Zone in human form (example.com/2001:db8::1)
-        :param user: User to authorize zone to (Document ID)
+        :param user_id: User to authorize zone to (Document ID)
         :return: Error, None if no error
         """
 
-        newid = self.zones.insert_one({
-            "zone": zone,
-            "users": [user],
-            "records": []
-        }).inserted_id
+        if self._user_exists(user_id):
+            # Create zone
+            new_zone = self.zones.insert_one({
+                "zone": zone,
+                "users": [user_id],
+                "records": []
+            })
 
-        self.users.update_one({"_id": user},
-                              {"$push": {"zones": newid}}
-                              )
+            # Update the user's document to include new zone
+            self.users.update_one({"_id": user_id}, {"$push": {"zones": new_zone.inserted_id}})
 
-        return None  # No error
+            return None  # No error
+
+        else:
+            return "User doesn't exist"
 
     def delete_zone(self, zone, user):
         user = ObjectId(user)
