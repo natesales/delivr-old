@@ -61,14 +61,14 @@ class CDNDatabase:
         Validate user credentials and return user document ID
         :param username: Plaintext username
         :param password: Hashed password
-        :return: user's document ID as string, None if not authorized
+        :return: user's document ID as string, "" if not authorized
         """
 
         user_doc = self.users.find_one({"username": username})
         if user_doc and user_doc["password"] == argon2.argon2_hash(password, configuration.salt):
             return str(user_doc["_id"])
 
-        return None  # Not authorized
+        return ""  # Not authorized
 
     # End user methods
     # Start zone methods
