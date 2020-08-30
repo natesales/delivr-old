@@ -73,7 +73,7 @@ class CDNDatabase:
     # End user methods
     # Start zone methods
 
-    def _zone_exists(self, zone):
+    def zone_exists(self, zone):
         """
         Check if a zone exists
         :param zone: Zone as string
@@ -96,7 +96,7 @@ class CDNDatabase:
 
         if self._user_exists(user_id):
             user = ObjectId(user_id)
-            if not self._zone_exists(zone):
+            if not self.zone_exists(zone):
                 # Create zone
                 new_zone = self.zones.insert_one({
                     "zone": zone,
@@ -121,7 +121,7 @@ class CDNDatabase:
         :return: Error, None if success
         """
 
-        if self._zone_exists(zone):
+        if self.zone_exists(zone):
             zone_doc = self.zones.find_one({"zone": zone})
 
             zone_users = zone_doc.get("users")
@@ -154,18 +154,6 @@ class CDNDatabase:
                     authorized_zones.append(self.zones.find_one({"_id": zone_id}))
 
         return authorized_zones
-
-    def zone_exists(self, user, zone):
-        user = ObjectId(user)
-
-        if not self.users.find_one({"_id": user}):
-            return "ERROR: User not found."
-
-        zonedoc = self.zones.find_one({"zone": zone})
-        if (not zonedoc) or (user not in zonedoc["users"]):
-            return "Zone doesn't exist"
-
-        return None  # No error
 
     # End zone methods
 
