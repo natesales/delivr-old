@@ -56,7 +56,7 @@ class CDNDatabase:
         else:
             return "Account with this email already exists"
 
-    def authenticated(self, username, password):
+    def authenticated(self, username: str, password: str) -> str:
         """
         Validate user credentials and return user document ID
         :param username: Plaintext username
@@ -66,7 +66,7 @@ class CDNDatabase:
 
         user_doc = self.users.find_one({"username": username})
         if user_doc and user_doc["password"] == argon2.argon2_hash(password, configuration.salt):
-            return user_doc["_id"]
+            return str(user_doc["_id"])
 
         return None  # Not authorized
 
