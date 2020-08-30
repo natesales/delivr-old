@@ -14,7 +14,7 @@ class CDNDatabase:
         # Collections
         self.users = self._db["users"]
         self.zones = self._db["zones"]
-        self.servers = self._db["servers"]
+        self.nodes = self._db["nodes"]
 
     # User methods
 
@@ -198,22 +198,29 @@ class CDNDatabase:
             self.zones.update_one({"zone": zone}, {"$set": {"records": current_records}})
 
     # End record methods
-    # Start server methods
+    # Start node methods
 
-    def get_servers(self):
+    def get_nodes(self):
         return list(self.servers.find())
 
-    def add_server(self, uid, location, transit, ixp, management, status):
-        self.servers.insert_one({
+    def add_node(self, uid: str, location: str, management: str, operational: bool):
+        """
+        Add a node
+        :param uid: location-country_code. For example Fremont, California is fmt-us
+        :param location: Full location, for example: Fremont, California
+        :param management: Management IP address
+        :param operational: Is the node operational?
+        :return:
+        """
+
+        self.nodes.insert_one({
             "uid": uid,
             "location": location,
-            "transit": transit,
-            "ixp": ixp,
             "management": management,
-            "status": status
+            "operational": operational
         })
 
-    # End server methods
+    # End node methods
 
     def authorized_for_zone(self, user_id, zone):
         user_id = ObjectId(user_id)
