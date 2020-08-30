@@ -16,7 +16,7 @@ class CDNDatabase:
         self.zones = self._db["zones"]
         self.servers = self._db["servers"]
 
-    # Helper functions
+    # User methods
 
     def _user_exists(self, user):
         """
@@ -36,8 +36,6 @@ class CDNDatabase:
             return False
 
         return True
-
-    # User methods
 
     def add_user(self, username, password):
         """
@@ -73,6 +71,20 @@ class CDNDatabase:
         return None  # Not authorized
 
     # End user methods
+    # Start zone methods
+
+    def _zone_exists(self, zone):
+        """
+        Check if a zone exists
+        :param zone: Zone as string
+        :return: True if zone exists, False if not
+        """
+
+        # If no user exists
+        if not self.zones.find_one({"zone": zone}):
+            return False
+
+        return True
 
     def add_zone(self, zone, user_id):
         """
@@ -83,34 +95,47 @@ class CDNDatabase:
         """
 
         if self._user_exists(user_id):
-            # Create zone
-            new_zone = self.zones.insert_one({
-                "zone": zone,
-                "users": [user_id],
-                "records": []
-            })
+            user = ObjectId(user_id)
+            if not self._zone_exists(zone):
+                # Create zone
+                new_zone = self.zones.insert_one({
+                    "zone": zone,
+                    "users": [user],
+                    "records": []
+                })
 
-            # Update the user's document to include new zone
-            self.users.update_one({"_id": user_id}, {"$push": {"zones": new_zone.inserted_id}})
+                # Update the user's document to include new zone
+                self.users.update_one({"_id": user}, {"$push": {"zones": new_zone.inserted_id}})
 
-            return None  # No error
+                return None  # No error
+            else:
+                return "Zone already exists"
 
         else:
             return "User doesn't exist"
 
-    def delete_zone(self, zone, user):
-        user = ObjectId(user)
+    def delete_zone(self, zone):
+        """
+        Delete a zone
+        :param zone: Zone ID
+        :return: Error, None if success
+        """
 
-        if not self.users.find_one({"_id": user}):
-            return "ERROR: User not found."
+        if self._zone_exists(zone):
+            zone_doc = self.zones.find_one({"zone": zone})
 
-        zoneid = self.zones.find_one({"zone": zone})["_id"]
+            zone_users = zone_doc.get("users")
+            if zone_users:
+                for user in zone_users:
+                    # Pull the zone doc out of the user's zones array
+                    self.users.update_one({"_id": user}, {"$pull": {"zones": zone_doc["_id"]}})
 
-        self.zones.delete_one({"_id": zoneid})
+            # Delete the zone itself
+            self.zones.delete_one({"_id": zone_doc["_id"]})
 
-        self.users.update_one({"_id": user}, {"$pull": {"zones": zoneid}})
-
-        return None  # No error
+            return None  # No error
+        else:
+            return "Zone doesn't exist"
 
     def get_zones(self, user):
         user = ObjectId(user)
@@ -139,6 +164,8 @@ class CDNDatabase:
             return "Zone doesn't exist"
 
         return None  # No error
+
+    # End zone methods
 
     def authorized_for_zone(self, user_id, zone):
         user_id = ObjectId(user_id)
