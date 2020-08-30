@@ -20,12 +20,12 @@ def make_session_permanent():
 
 @app.errorhandler(404)
 def error_notfound(e):
-    return render_template("error-404.html"), 404
+    return render_template("errors/404.html"), 404
 
 
 @app.errorhandler(500)
 def error_server(e):
-    return render_template("error-500.html"), 500
+    return render_template("errors/500.html"), 500
 
 
 @app.route("/")
