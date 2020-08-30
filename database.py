@@ -201,7 +201,7 @@ class CDNDatabase:
     # Start node methods
 
     def get_nodes(self):
-        return list(self.servers.find())
+        return list(self.nodes.find())
 
     def add_node(self, uid: str, location: str, management: str, operational: bool):
         """
