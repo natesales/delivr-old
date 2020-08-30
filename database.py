@@ -49,7 +49,7 @@ class CDNDatabase:
         if user_doc is None:
             self.users.insert_one({
                 "username": username,
-                "password": argon2.argon2_hash(password, configuration.salt)
+                "password": argon2.argon2_hash(password, configuration["salt"])
             })
 
             return None  # No error
@@ -65,7 +65,7 @@ class CDNDatabase:
         """
 
         user_doc = self.users.find_one({"username": username})
-        if user_doc and user_doc["password"] == argon2.argon2_hash(password, configuration.salt):
+        if user_doc and user_doc["password"] == argon2.argon2_hash(password, configuration["salt"]):
             return str(user_doc["_id"])
 
         return ""  # Not authorized

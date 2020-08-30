@@ -8,7 +8,7 @@ from database import CDNDatabase
 
 app = Flask(__name__)
 app.secret_key = urandom(12)
-db = CDNDatabase(configuration.database)
+db = CDNDatabase(configuration["database"])
 
 
 # Set daily rotating sessions

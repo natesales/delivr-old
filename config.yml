@@ -1,3 +1,6 @@
 
 # Salt for Argon2 hashing
 salt: my-random-salt
+
+# MongoDB connection URI
+database: mongodb://web1.natesales.net:27018
