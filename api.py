@@ -45,10 +45,10 @@ def login():
     if request.method == "GET":
         return render_template("auth/login.html")
     elif request.method == "POST":
-        userdoc = db.authenticated(request.form.get("username"), request.form.get("password"))
-        if userdoc:
-            session["userid"] = str(userdoc["_id"])
-            session["username"] = userdoc["username"]
+        user_id = db.authenticated(request.form.get("username"), request.form.get("password"))
+        if user_id != "":
+            session["user_id"] = user_id
+            session["username"] = request.form.get("username")
             return redirect("/")
         else:
             return "Not authorized"
