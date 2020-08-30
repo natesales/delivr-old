@@ -156,6 +156,64 @@ class CDNDatabase:
         return authorized_zones
 
     # End zone methods
+    # Start record methods
+
+    def add_record(self, zone: str, domain: str, _type: str, value: str, ttl: str):
+        """
+        Add a record to a zone
+        :param zone: Parent zone
+        :param domain: Domain in BIND format
+        :param _type: Record type
+        :param value: Record value
+        :param ttl: TTL
+        :return:
+        """
+
+        if self.zone_exists(zone):
+            self.zones.update_one({"zone": zone}, {"$push": {"records": {
+                "domain": domain,
+                "type": _type,
+                "value": value,
+                "ttl": ttl
+            }}})
+        else:
+            return "Zone doesn't exist"
+
+    def delete_record(self, zone, record_id):
+        """
+        Delete a record by id
+        :param zone: Parent zone
+        :param record_id:
+        :return:
+        """
+
+        if self.zone_exists(zone):
+            # Get current records
+            current_records = self.zones.find_one({"zone": zone})["records"]
+
+            # Remove the record
+            current_records.pop(int(record_id))
+
+            # Set the modified records
+            self.zones.update_one({"zone": zone}, {"$set": {"records": current_records}})
+
+    # End record methods
+    # Start server methods
+
+    def get_servers(self):
+        return list(self.servers.find())
+
+    def add_server(self, uid, location, transit, ixp, management, status):
+        self.servers.insert_one({
+            "uid": uid,
+            "location": location,
+            "transit": transit,
+            "ixp": ixp,
+            "management": management,
+            "status": status
+        })
+
+    # End server methods
 
     def authorized_for_zone(self, user_id, zone):
         user_id = ObjectId(user_id)
@@ -175,29 +233,3 @@ class CDNDatabase:
 
     def get_all_zones(self):
         return self.zones.find({})
-
-    def add_record(self, zone, domain, _type, value, ttl):
-        self.zones.update_one({"zone": zone}, {"$push": {"records": {
-            "domain": domain,
-            "type": _type,
-            "value": value,
-            "ttl": ttl
-        }}})
-
-    def get_servers(self):
-        return list(self.servers.find())
-
-    def add_server(self, uid, location, transit, ixp, management, status):
-        self.servers.insert_one({
-            "uid": uid,
-            "location": location,
-            "transit": transit,
-            "ixp": ixp,
-            "management": management,
-            "status": status
-        })
-
-    def delete_record(self, zone, record_id):
-        current_records = self.zones.find_one({"zone": zone})["records"]
-        current_records.pop(int(record_id))
-        self.zones.update_one({"zone": zone}, {"$set": {"records": current_records}})
