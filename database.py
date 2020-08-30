@@ -14,7 +14,7 @@ class CDNDatabase:
         # Collections
         self.users = self._db["users"]
         self.zones = self._db["zones"]
-        self.nodes = self._db["nodes"]
+        self.nodes = self._db["servers"]
 
     # User methods
 
@@ -65,7 +65,7 @@ class CDNDatabase:
         """
 
         user_doc = self.users.find_one({"username": username})
-        if user_doc and user_doc["password"] == argon2.argon2_hash(password, configuration["salt"]):
+        if user_doc and (user_doc["password"] == argon2.argon2_hash(password, configuration["salt"])):
             return str(user_doc["_id"])
 
         return ""  # Not authorized
