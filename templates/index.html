@@ -271,14 +271,6 @@
                                 <div class="row">
                                     <div class="col-8 col-sm-12 col-xl-8 my-auto">
                                         <div class="d-flex d-sm-block d-md-flex align-items-center">
-                                            <div style="display: none;">
-                                                {% set total_records = 0 %}
-                                                {% for zone in zones %}
-                                                {% for record in zone["records"] %}
-                                                {% set total_records = total_records + 1 %}
-                                                {% endfor %}
-                                                {% endfor %}
-                                            </div>
                                             <h2 class="mb-0">{{ total_records }}</h2>
                                             <p class="text-success ml-2 mb-0 font-weight-medium">/ 1000</p>
                                         </div>

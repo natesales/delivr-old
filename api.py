@@ -36,7 +36,8 @@ def index():
     return render_template("index.html",
                            name=session["username"],
                            servers=db.get_nodes(),
-                           zones=db.get_zones(session.get("user_id"))
+                           zones=db.get_zones(session.get("user_id")),
+                           total_records=db.get_total_records(session.get("user_id"))
                            )
 
 

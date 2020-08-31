@@ -243,3 +243,17 @@ class CDNDatabase:
 
     def get_all_zones(self):
         return self.zones.find({})
+
+    def get_total_records(self, user: str) -> int:
+        """
+        Get total number of records that a user has
+        :param user: User's id
+        :return: number of records
+        """
+        total_records = 0
+        if self._user_exists(user):
+            for zone in self.get_zones(user):
+                for record in zone["records"]:
+                    total_records += 1
+
+        return total_records
