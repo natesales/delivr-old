@@ -3,6 +3,7 @@ from os import urandom
 
 from flask import Flask, session, render_template, request, redirect
 
+import exporter
 from config import configuration
 from database import CDNDatabase
 
@@ -152,27 +153,7 @@ def delete_record(zone, record_index):
 
 @app.route("/export")
 def export():
-    local = ""
-    for zone in db.get_all_zones():
-        local += "zone \"" + zone["zone"] + "\" {\n  type master;\n  file \"/etc/bind/" + zone["zone"] + "\";\n};\n"
-
-        with open("zone.j2") as zone_template:
-            template = Template(zone_template.read()).render(zone=zone["zone"], records=zone.get("records"), serial=time.strftime("%Y%m%d%S"))
-
-            with open("source/dns/" + zone["zone"], "w") as zone_file:
-                zone_file.write(template)
-
-    with open("source/dns/zones", "w") as zones_file:
-        zones_file.write(local)
-
-    servers = "[nodes]\n"
-    for server in db.get_servers():
-        if server["status"] == "Operational":
-            servers += server["uid"] + " ansible_host=" + server["management"] + "\n"
-
-    with open("hosts", "w") as hosts_file:
-        hosts_file.write(servers.strip())
-
+    exporter.build_zones(db.get_all_zones())
     return "200"
 
 
