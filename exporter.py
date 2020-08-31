@@ -24,10 +24,12 @@ def build_zones(zones):
     with open("source/named.conf.local", "w") as zones_file:
         zones_file.write(local)
 
-    # servers = "[nodes]\n"
-    # for server in db.get_servers():
-    #     if server["status"] == "Operational":
-    #         servers += server["uid"] + " ansible_host=" + server["management"] + "\n"
-    #
-    # with open("hosts", "w") as hosts_file:
-    #     hosts_file.write(servers.strip())
+
+def build_nodes(nodes):
+    servers = "[nodes]\n"
+    for server in db.get_servers():
+        if server["operational"]:
+            servers += server["uid"] + " ansible_host=" + server["management"] + "\n"
+
+    with open("hosts", "w") as hosts_file:
+        hosts_file.write(servers.strip())
