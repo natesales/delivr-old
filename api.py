@@ -52,7 +52,7 @@ def login():
             session["username"] = request.form.get("username")
             return redirect("/")
         else:
-            return "Not authorized"
+            return render_template("errors/400.html", message="Not authorized")
 
 
 @app.route("/signup", methods=["GET", "POST"])
@@ -64,7 +64,7 @@ def signup():
         if error is None:
             return redirect("/login")
         else:
-            return error
+            return render_template("errors/400.html", message=error)
 
 
 @app.route("/logout")
@@ -88,7 +88,7 @@ def new():
 
         error = db.add_zone(zone, session["user_id"])
         if error:
-            return error
+            return render_template("errors/400.html", message=error)
 
         return redirect("/")
 
@@ -113,7 +113,7 @@ def records(zone):
             db.add_record(zone, request.form.get("domain"), request.form.get("type"), request.form.get("value"), request.form.get("ttl"))
             return redirect("/records/" + zone)
     else:
-        return "Not authorized for zone"
+        return render_template("errors/400.html", message="Not authorized for zone")
 
 
 @app.route("/zones")
@@ -136,9 +136,10 @@ def zone_delete(zone):
         error = db.delete_zone(zone)
 
         if error:
-            return error
+            return render_template("errors/400.html", message=error)
+
     else:
-        return "Unauthorized"
+        return render_template("errors/400.html", message="Unauthorized")
 
     return redirect("/")
 
