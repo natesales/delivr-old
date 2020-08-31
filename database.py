@@ -93,26 +93,28 @@ class CDNDatabase:
         :param user_id: User to authorize zone to (Document ID)
         :return: Error, None if no error
         """
+        if zone:
+            if self._user_exists(user_id):
+                user = ObjectId(user_id)
+                if not self.zone_exists(zone):
+                    # Create zone
+                    new_zone = self.zones.insert_one({
+                        "zone": zone,
+                        "users": [user],
+                        "records": []
+                    })
 
-        if self._user_exists(user_id):
-            user = ObjectId(user_id)
-            if not self.zone_exists(zone):
-                # Create zone
-                new_zone = self.zones.insert_one({
-                    "zone": zone,
-                    "users": [user],
-                    "records": []
-                })
+                    # Update the user's document to include new zone
+                    self.users.update_one({"_id": user}, {"$push": {"zones": new_zone.inserted_id}})
 
-                # Update the user's document to include new zone
-                self.users.update_one({"_id": user}, {"$push": {"zones": new_zone.inserted_id}})
+                    return None  # No error
+                else:
+                    return "Zone already exists"
 
-                return None  # No error
             else:
-                return "Zone already exists"
-
+                return "User doesn't exist"
         else:
-            return "User doesn't exist"
+            return "Zone must not be empty"
 
     def delete_zone(self, zone):
         """
@@ -169,7 +171,7 @@ class CDNDatabase:
         :return:
         """
 
-        if self.zone_exists(zone):
+        if self.zone_exists(zone) and (zone and domain and _type and value and ttl):
             self.zones.update_one({"zone": zone}, {"$push": {"records": {
                 "domain": domain,
                 "type": _type,
