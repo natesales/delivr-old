@@ -151,9 +151,15 @@ def delete_record(zone, record_index):
     return redirect("/records/" + zone)
 
 
-@app.route("/export")
-def export():
+@app.route("/export/dns")
+def export_dns():
     exporter.build_zones(db.get_all_zones())
+    return "200"
+
+
+@app.route("/export/hosts")
+def export_hosts():
+    exporter.build_nodes(db.get_nodes())
     return "200"
 
 
