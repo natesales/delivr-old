@@ -36,7 +36,7 @@ def index():
     return render_template("index.html",
                            name=session["username"],
                            servers=db.get_nodes(),
-                           zones=db.get_zones(session.get("userid"))
+                           zones=db.get_zones(session.get("user_id"))
                            )
 
 
@@ -85,7 +85,7 @@ def new():
     elif request.method == "POST":
         zone = request.form.get("zone")
 
-        error = db.add_zone(zone, session["userid"])
+        error = db.add_zone(zone, session["user_id"])
         if error:
             return error
 
@@ -97,22 +97,22 @@ def records(zone):
     if not session.get("username"):
         return redirect("/login")
 
-    error = db.zone_exists(session["userid"], zone)
-    if error:
-        return error
+    if db.authorized_for_zone(session["user_id"], zone):
+        error = db.zone_exists(session["user_id"])
+        if error:
+            return error
 
-    if request.method == "GET":
-        return render_template("records.html",
-                               name=session["username"],
-                               zone=db.get_zone(session["userid"], zone)
-                               )
+        if request.method == "GET":
+            return render_template("records.html",
+                                   name=session["username"],
+                                   zone=db.get_zone(session["user_id"], zone)
+                                   )
 
-    elif request.method == "POST":
-        if db.authorized_for_zone(session["userid"], zone):
+        elif request.method == "POST":
             db.add_record(zone, request.form.get("domain"), request.form.get("type"), request.form.get("value"), request.form.get("ttl"))
             return redirect("/records/" + zone)
-        else:
-            return "Not authorized for zone"
+    else:
+        return "Not authorized for zone"
 
 
 @app.route("/zones")
@@ -122,7 +122,7 @@ def zones():
 
     return render_template("zones.html",
                            name=session["username"],
-                           zones=db.get_zones(session.get("userid"))
+                           zones=db.get_zones(session.get("user_id"))
                            )
 
 
@@ -131,10 +131,13 @@ def zone_delete(zone):
     if not session.get("username"):
         return redirect("/login")
 
-    error = db.delete_zone(zone, session["userid"])
+    if db.authorized_for_zone(session["user_id"], zone):
+        error = db.delete_zone(zone)
 
-    if error:
-        return error
+        if error:
+            return error
+    else:
+        return "Unauthorized"
 
     return redirect("/")
 

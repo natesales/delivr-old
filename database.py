@@ -223,14 +223,17 @@ class CDNDatabase:
     # End node methods
 
     def authorized_for_zone(self, user_id, zone):
-        user_id = ObjectId(user_id)
-
-        userdoc = self.users.find_one({"_id": user_id})
-        if not userdoc:
-            return "ERROR: User not found."
-
-        zonedoc = self.zones.find_one({"zone": zone})
-        return user_id in zonedoc["users"]
+        """
+        Is user authorized for zone?
+        :param user_id:
+        :param zone:
+        :return:
+        """
+        if self._user_exists(user_id) and self.zone_exists(zone):
+            zone_doc = self.zones.find_one({"zone": zone})
+            return ObjectId(user_id) in zone_doc["users"]
+        else:
+            return False
 
     def get_zone(self, user, zone):
         if self.authorized_for_zone(user, zone):
