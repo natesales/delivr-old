@@ -1,0 +1,15 @@
+- name: Status
+  hosts: all
+  tasks:
+    - name: Check service status
+      command: systemctl status "{{ item }}"
+      with_items:
+        - bind9
+        - bird
+      register: result
+      ignore_errors: yes
+
+    - name: Check DNS query
+      shell: dig +short chaos txt version.bind @localhost | tr -d '"'
+      register: this
+      failed_when: this.stdout != 'PoP-Tag ' + ansible_hostname

@@ -1,0 +1,20 @@
+- name: Refresh
+  hosts: all
+  tasks:
+    - name: Copy DNS local config
+      copy:
+        src: ../source/dns/named.conf.local
+        dest: /etc/bind/named.conf.local
+      register: configuration
+
+    - name: Copy DNS zone files
+      copy:
+        src: "{{ item }}"
+        dest: /etc/bind/
+      with_fileglob:
+        - ../source/dns/db.*
+      register: configuration
+
+    - name: Reload zones
+      command: rndc reload
+      when: configuration.changed
