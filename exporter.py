@@ -14,20 +14,20 @@ def build_zones(zones):
     for zone in zones:
         local += Template(local_template).render(zone=zone["zone"])
 
-        with open("source/" + zone["zone"], "w") as zone_file:
+        with open("source/dns/db." + zone["zone"], "w") as zone_file:
             zone_file.write(Template(zone_template).render(
                 zone=zone["zone"],
                 records=zone.get("records"),
                 serial=strftime("%Y%m%d%S"))
             )
 
-    with open("source/named.conf.local", "w") as zones_file:
+    with open("source/dns/named.conf.local", "w") as zones_file:
         zones_file.write(local)
 
 
 def build_nodes(nodes):
     servers = "[nodes]\n"
-    for server in db.get_servers():
+    for server in nodes:
         if server["operational"]:
             servers += server["uid"] + " ansible_host=" + server["management"] + "\n"
 
