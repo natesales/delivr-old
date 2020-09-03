@@ -14,7 +14,7 @@ class CDNDatabase:
         # Collections
         self.users = self._db["users"]
         self.zones = self._db["zones"]
-        self.nodes = self._db["servers"]
+        self.nodes = self._db["nodes"]
 
     # User methods
 
