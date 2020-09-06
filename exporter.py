@@ -1,9 +1,11 @@
+import os
 from time import strftime
 
 from jinja2 import Template
 
 
 def build_zones(zones):
+    os.system("rm -rf source/dns/db.*")
     with open("config/local.j2") as local_template_file:
         local_template = local_template_file.read()
 
