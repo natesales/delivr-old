@@ -1,6 +1,17 @@
-
 # Salt for Argon2 hashing
 salt: my-random-salt
 
 # MongoDB connection URI
-database: mongodb://web1.natesales.net:27018
+database: mongodb://localhost:27017
+
+# ASN
+asn: 65000
+
+# Routes
+routes:
+  - 192.0.2.0/24
+  - 2001:db8::/48
+
+nameservers:
+  - ns1.example.com
+  - ns2.example.com
