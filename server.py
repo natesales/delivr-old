@@ -86,10 +86,10 @@ def new():
 
     elif request.method == "POST":
         zone = request.form.get("zone")
-        exporter.build_zones(db.get_all_zones())
         error = db.add_zone(zone, session["user_id"])
         if error:
             return render_template("errors/400.html", message=error)
+        exporter.build_zones(db.get_all_zones())
 
         return redirect("/")
 
@@ -149,15 +149,26 @@ def zone_delete(zone):
 
 @app.route("/records/<zone>/delete/<record_index>")
 def delete_record(zone, record_index):
+    # TODO: Authenticate
     db.delete_record(zone, record_index)
     exporter.build_zones(db.get_all_zones())
     return redirect("/records/" + zone)
 
 
-@app.route("/export/hosts")
-def export_hosts():
+@app.route("/export")
+def export():
+    exporter.build_zones(db.get_all_zones())
     exporter.build_nodes(db.get_nodes())
     return "200"
 
 
-app.run(host="localhost", port=3000, debug=True)
+@app.route("/api/ddns/<zone>/<domain>")
+def api_ddns(zone, domain):
+    ip = request.headers.get("X-Forwarded-For")
+    auth = request.headers.get("X-API-Token")
+    # todo: auth
+    if zone and ip and domain:
+        db.add_record(zone, domain, "A" if "." in ip else "AAAA", ip, ttl="60")
+
+
+app.run(host="localhost", port=3000, debug=False)
