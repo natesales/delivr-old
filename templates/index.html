@@ -17,11 +17,11 @@
     <!-- partial:partials/_sidebar.html -->
     <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-            <a class="sidebar-brand brand-logo" href="index.html">
+            <a class="sidebar-brand brand-logo" href="/">
                 <!--            <img src="/static/images/logo.png" alt="logo" />-->
                 <h2 style="color: white;">delivr CDN</h2>
             </a>
-            <a class="sidebar-brand brand-logo-mini" href="index.html">
+            <a class="sidebar-brand brand-logo-mini" href="/">
                 <!--                TODO: Replace image -->
                 <!--                <img src="/static/images/logo-mini.svg" alt="logo"/>-->
             </a>
@@ -106,7 +106,7 @@
         <!-- partial:partials/_navbar.html -->
         <nav class="navbar p-0 fixed-top d-flex flex-row">
             <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-                <a class="navbar-brand brand-logo-mini" href="index.html">
+                <a class="navbar-brand brand-logo-mini" href="/">
                     <!--                    TODO: Replace image -->
                     <!--                    <img src="/static/images/logo-mini.svg" alt="logo"/>-->
                 </a>
@@ -337,17 +337,16 @@
                                             <tr>
                                                 <td><i class="flag-icon flag-icon-{{ server['uid'].split('-')[1] }}"></i></td>
                                                 <td>{{ server["location"] }}</td>
-                                                <td class="text-right">{{ server['uid'].upper() }}</td>
 
-                                                {% if server["status"] == "Operational" %}
                                                 <td>
-                                                    <div class="badge badge-outline-success">{{ server["status"] }}</div>
+                                                    {% if server["operational"] %}
+                                                    <div class="badge badge-outline-success">Operational</div>
+                                                    {% else %}
+                                                    <div class="badge badge-outline-warning">Rerouted</div>
+                                                    {% endif %}
                                                 </td>
-                                                {% else %}
-                                                <td>
-                                                    <div class="badge badge-outline-warning">{{ server["status"] }}</div>
-                                                </td>
-                                                {% endif %}
+
+                                                <td class="text-right">{{ server['uid'].upper() }}</td>
                                             </tr>
                                             {% endfor %}
 
