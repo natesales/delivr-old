@@ -9,6 +9,8 @@ class CDNDatabase:
         self._client = pymongo.MongoClient(mongo_uri)
         self._db = self._client["cdn"]
 
+        self.salt = salt
+
         # Collections
         self.users = self._db["users"]
         self.zones = self._db["zones"]
@@ -47,7 +49,7 @@ class CDNDatabase:
         if user_doc is None:
             self.users.insert_one({
                 "username": username,
-                "password": argon2.argon2_hash(password, salt)
+                "password": argon2.argon2_hash(password, self.salt)
             })
 
             return None  # No error
@@ -63,7 +65,7 @@ class CDNDatabase:
         """
 
         user_doc = self.users.find_one({"username": username})
-        if user_doc and (user_doc["password"] == argon2.argon2_hash(password, salt)):
+        if user_doc and (user_doc["password"] == argon2.argon2_hash(password, self.salt)):
             return str(user_doc["_id"])
 
         return ""  # Not authorized
