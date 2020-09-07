@@ -148,10 +148,12 @@ def zone_delete(zone):
 
 @app.route("/records/<zone>/delete/<record_index>")
 def delete_record(zone, record_index):
-    # TODO: Authenticate
-    db.delete_record(zone, record_index)
-    exporter.build_zones(db.get_all_zones())
-    return redirect("/records/" + zone)
+    if db.authorized_for_zone(session["user_id"], zone):
+        db.delete_record(zone, record_index)
+        exporter.build_zones(db.get_all_zones())
+        return redirect("/records/" + zone)
+    else:
+        return redirect("/login")
 
 
 @app.route("/export")
