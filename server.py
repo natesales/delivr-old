@@ -3,11 +3,17 @@ from os import urandom
 
 from flask import Flask, session, render_template, request, redirect
 
+from lib.aggregator import build_zones
 from lib.config import configuration
 from lib.database import CDNDatabase
 
 app = Flask(__name__)
-app.secret_key = urandom(12)
+
+if configuration["development"]:
+    app.secret_key = b'0'
+else:
+    app.secret_key = urandom(12)
+
 db = CDNDatabase(configuration["database"], configuration["salt"])
 
 
@@ -88,8 +94,8 @@ def new():
         error = db.add_zone(zone, session["user_id"])
         if error:
             return render_template("errors/400.html", message=error)
-        exporter.build_zones(db.get_all_zones())
 
+        build_zones(db.get_all_zones())
         return redirect("/")
 
 
@@ -111,7 +117,7 @@ def records(zone):
 
         elif request.method == "POST":
             db.add_record(zone, request.form.get("domain"), request.form.get("type"), request.form.get("value"), request.form.get("ttl"))
-            exporter.build_zones(db.get_all_zones())
+            build_zones(db.get_all_zones())
             return redirect("/records/" + zone)
     else:
         return render_template("errors/400.html", message="Not authorized for zone")
@@ -135,7 +141,7 @@ def zone_delete(zone):
 
     if db.authorized_for_zone(session["user_id"], zone):
         error = db.delete_zone(zone)
-        exporter.build_zones(db.get_all_zones())
+        build_zones(db.get_all_zones())
 
         if error:
             return render_template("errors/400.html", message=error)
@@ -150,17 +156,16 @@ def zone_delete(zone):
 def delete_record(zone, record_index):
     if db.authorized_for_zone(session["user_id"], zone):
         db.delete_record(zone, record_index)
-        exporter.build_zones(db.get_all_zones())
+        build_zones(db.get_all_zones())
         return redirect("/records/" + zone)
     else:
         return redirect("/login")
 
 
-@app.route("/export")
-def export():
-    exporter.build_zones(db.get_all_zones())
-    exporter.build_nodes(db.get_nodes())
-    return "200"
+@app.route("/refresh")
+def refresh():
+    build_zones(db.get_all_zones())
+    return "Done"
 
 
 # @app.route("/api/ddns/<zone>/<domain>")
@@ -172,4 +177,8 @@ def export():
 #         db.add_record(zone, domain, "A" if "." in ip else "AAAA", ip, ttl="60")
 
 
-app.run(host=configuration["server_host"], port=configuration["server_port"], debug=False)
+app.run(
+    host=configuration["server_host"],
+    port=configuration["server_port"],
+    debug=configuration["development"]
+)
