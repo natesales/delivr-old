@@ -161,13 +161,13 @@ def export():
     return "200"
 
 
-@app.route("/api/ddns/<zone>/<domain>")
-def api_ddns(zone, domain):
-    ip = request.headers.get("X-Forwarded-For")
-    auth = request.headers.get("X-API-Token")
-    # todo: auth
-    if zone and ip and domain:
-        db.add_record(zone, domain, "A" if "." in ip else "AAAA", ip, ttl="60")
+# @app.route("/api/ddns/<zone>/<domain>")
+# def api_ddns(zone, domain):
+#     ip = request.headers.get("X-Forwarded-For")
+#     auth = request.headers.get("X-API-Token")
+#     # todo: auth
+#     if zone and ip and domain:
+#         db.add_record(zone, domain, "A" if "." in ip else "AAAA", ip, ttl="60")
 
 
 app.run(host=configuration["server_host"], port=configuration["server_port"], debug=False)
