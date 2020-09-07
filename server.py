@@ -1,14 +1,14 @@
 from datetime import timedelta
 from os import urandom
 
-from database import CDNDatabase
 from flask import Flask, session, render_template, request, redirect
 
-from config import configuration
+from lib.config import configuration
+from lib.database import CDNDatabase
 
 app = Flask(__name__)
 app.secret_key = urandom(12)
-db = CDNDatabase(configuration["database"])
+db = CDNDatabase(configuration["database"], configuration["salt"])
 
 
 # Set daily rotating sessions
@@ -170,4 +170,4 @@ def api_ddns(zone, domain):
         db.add_record(zone, domain, "A" if "." in ip else "AAAA", ip, ttl="60")
 
 
-app.run(host="localhost", port=3000, debug=False)
+app.run(host=configuration["server_host"], port=configuration["server_port"], debug=False)
