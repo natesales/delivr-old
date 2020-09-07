@@ -1,11 +1,10 @@
 from datetime import timedelta
 from os import urandom
 
+from database import CDNDatabase
 from flask import Flask, session, render_template, request, redirect
 
-import exporter
 from config import configuration
-from database import CDNDatabase
 
 app = Flask(__name__)
 app.secret_key = urandom(12)

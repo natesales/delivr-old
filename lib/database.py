@@ -3,11 +3,9 @@ import pymongo
 from bson.errors import InvalidId
 from bson.objectid import ObjectId
 
-from config import configuration
-
 
 class CDNDatabase:
-    def __init__(self, mongo_uri):
+    def __init__(self, mongo_uri, salt):
         self._client = pymongo.MongoClient(mongo_uri)
         self._db = self._client["cdn"]
 
@@ -49,7 +47,7 @@ class CDNDatabase:
         if user_doc is None:
             self.users.insert_one({
                 "username": username,
-                "password": argon2.argon2_hash(password, configuration["salt"])
+                "password": argon2.argon2_hash(password, salt)
             })
 
             return None  # No error
@@ -65,7 +63,7 @@ class CDNDatabase:
         """
 
         user_doc = self.users.find_one({"username": username})
-        if user_doc and (user_doc["password"] == argon2.argon2_hash(password, configuration["salt"])):
+        if user_doc and (user_doc["password"] == argon2.argon2_hash(password, salt)):
             return str(user_doc["_id"])
 
         return ""  # Not authorized
@@ -93,7 +91,7 @@ class CDNDatabase:
         :param user_id: User to authorize zone to (Document ID)
         :return: Error, None if no error
         """
-        if zone:
+        if zone and ("." in zone):
             if self._user_exists(user_id):
                 user = ObjectId(user_id)
                 if not self.zone_exists(zone):
@@ -114,7 +112,7 @@ class CDNDatabase:
             else:
                 return "User doesn't exist"
         else:
-            return "Zone must not be empty"
+            return "Invalid zone"
 
     def delete_zone(self, zone):
         """
@@ -179,7 +177,7 @@ class CDNDatabase:
                 "ttl": ttl
             }}})
         else:
-            return "Zone doesn't exist"
+            return "Zone doesn't exist or entry is blank"
 
     def delete_record(self, zone, record_id):
         """
@@ -255,7 +253,6 @@ class CDNDatabase:
         total_records = 0
         if self._user_exists(user):
             for zone in self.get_zones(user):
-                for record in zone["records"]:
-                    total_records += 1
+                total_records += len(zone["records"])
 
         return total_records
