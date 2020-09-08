@@ -101,7 +101,8 @@ class CDNDatabase:
                     new_zone = self.zones.insert_one({
                         "zone": zone,
                         "users": [user],
-                        "records": []
+                        "records": [],
+                        "soa": strftime("%Y%m%d%S")
                     })
 
                     # Update the user's document to include new zone
@@ -178,6 +179,8 @@ class CDNDatabase:
                 "value": value,
                 "ttl": ttl
             }}})
+
+            self.zones.update_one({"zone": zone}, {"$set": {"soa": strftime("%Y%m%d%S")}})
         else:
             return "Zone doesn't exist or entry is blank"
 
@@ -197,7 +200,10 @@ class CDNDatabase:
             current_records.pop(int(record_id))
 
             # Set the modified records
-            self.zones.update_one({"zone": zone}, {"$set": {"records": current_records}})
+            self.zones.update_one({"zone": zone}, {"$set": {
+                "records": current_record,
+                "soa": strftime("%Y%m%d%S")
+            }})
 
     # End record methods
     # Start node methods
