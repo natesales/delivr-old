@@ -23,6 +23,10 @@ routes:
   - 192.0.2.0/24
   - 2001:db8::/48
 
+edge-ips:
+  - 192.0.2.1/24
+  - 2001:db8::1/48
+
 # Server
 server-host: localhost
 server-port: 3000

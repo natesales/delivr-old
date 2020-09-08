@@ -2,6 +2,7 @@ from datetime import timedelta
 from os import urandom
 
 from flask import Flask, session, render_template, request, redirect
+from jinja2 import Template
 
 from lib.aggregator import build_zones
 from lib.config import configuration
@@ -156,6 +157,17 @@ def delete_record(zone, record_index):
         return redirect("/records/" + zone)
     else:
         return redirect("/login")
+
+
+@app.route("/install")
+def install():
+    with open("config/bird.j2", "r") as template_file:
+        bird_config = Template(template_file.read()).render(asn=configuration["asn"], ipv4_routes=configuration["ipv4_routes"], ipv6_routes=configuration["ipv6_routes"])
+
+    with open("config/network.j2", "r") as template_file:
+        network_config = Template(template_file.read()).render(edge_ips=configuration["edge_ips"])
+
+    return bird_config, network_config
 
 
 @app.route("/export")
