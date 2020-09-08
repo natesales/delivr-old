@@ -203,7 +203,7 @@ class CDNDatabase:
 
             # Set the modified records
             self.zones.update_one({"zone": zone}, {"$set": {
-                "records": current_record,
+                "records": current_records,
                 "serial": strftime("%Y%m%d%S")
             }})
 
