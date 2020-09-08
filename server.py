@@ -158,10 +158,9 @@ def delete_record(zone, record_index):
         return redirect("/login")
 
 
-@app.route("/refresh")
-def refresh():
-    build_zones(db.get_all_zones())
-    return "Done"
+@app.route("/export")
+def export():
+    return build_zones(db.get_all_zones())
 
 
 # @app.route("/api/ddns/<zone>/<domain>")
