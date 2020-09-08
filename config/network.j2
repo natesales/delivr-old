@@ -3,8 +3,7 @@
 ip link del dev local type dummy
 ip link add dev local type dummy
 
-{% for address in edge_ips %}
+{% for address in edge_ips -%}
 ip addr add dev local {{ address }}
 {% endfor %}
-
 ip link set dev local up
