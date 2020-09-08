@@ -30,6 +30,8 @@ for route in _config["routes"]:
     else:
         configuration["ipv4_routes"].append(route)
 
+configuration["edge_ips"] = _config["edge-ips"]
+
 # Database
 configuration["database"] = _config["database"]
 
