@@ -5,10 +5,9 @@ $TTL	86400
 			  86400		; Retry
 			2419200		; Expire
 			  86400 )	; Negative Cache TTL
-{% for nameserver in nameservers %}
+{% for nameserver in nameservers -%}
 @	IN	NS	{{ nameserver }}.
 {% endfor %}
-
 {% for record in records -%}
 {{ record["domain"] }}    {{ record["ttl"] }}    IN    {{ record["type"] }}    {{ record["value"] }}
 {% endfor %}
