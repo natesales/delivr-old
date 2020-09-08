@@ -29,7 +29,7 @@ def build_zones(db_zones):
                                               soa_root=configuration["soa_root"]
                                               )
 
-    print(zones)
+    return zones
 
 # def export_zones():
 #     os.system("rm -rf source/dns/db.*")
