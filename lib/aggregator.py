@@ -23,7 +23,7 @@ def build_zones(db_zones):
 
     for zone in db_zones:
         zones[zone["zone"]] = _build_template("config/zone.j2",
-                                              serial="mySerial",
+                                              serial=zone["serial"],
                                               records=zone["records"],
                                               nameservers=configuration["nameservers"],
                                               soa_root=configuration["soa_root"]

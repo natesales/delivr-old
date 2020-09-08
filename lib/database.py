@@ -102,7 +102,7 @@ class CDNDatabase:
                         "zone": zone,
                         "users": [user],
                         "records": [],
-                        "soa": strftime("%Y%m%d%S")
+                        "serial": strftime("%Y%m%d%S")
                     })
 
                     # Update the user's document to include new zone
@@ -180,7 +180,7 @@ class CDNDatabase:
                 "ttl": ttl
             }}})
 
-            self.zones.update_one({"zone": zone}, {"$set": {"soa": strftime("%Y%m%d%S")}})
+            self.zones.update_one({"zone": zone}, {"$set": {"serial": strftime("%Y%m%d%S")}})
         else:
             return "Zone doesn't exist or entry is blank"
 
@@ -202,7 +202,7 @@ class CDNDatabase:
             # Set the modified records
             self.zones.update_one({"zone": zone}, {"$set": {
                 "records": current_record,
-                "soa": strftime("%Y%m%d%S")
+                "serial": strftime("%Y%m%d%S")
             }})
 
     # End record methods
