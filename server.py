@@ -95,7 +95,6 @@ def new():
         if error:
             return render_template("errors/400.html", message=error)
 
-        build_zones(db.get_all_zones())
         return redirect("/")
 
 
@@ -117,7 +116,6 @@ def records(zone):
 
         elif request.method == "POST":
             db.add_record(zone, request.form.get("domain"), request.form.get("type"), request.form.get("value"), request.form.get("ttl"))
-            build_zones(db.get_all_zones())
             return redirect("/records/" + zone)
     else:
         return render_template("errors/400.html", message="Not authorized for zone")
@@ -141,7 +139,6 @@ def zone_delete(zone):
 
     if db.authorized_for_zone(session["user_id"], zone):
         error = db.delete_zone(zone)
-        build_zones(db.get_all_zones())
 
         if error:
             return render_template("errors/400.html", message=error)
@@ -156,7 +153,6 @@ def zone_delete(zone):
 def delete_record(zone, record_index):
     if db.authorized_for_zone(session["user_id"], zone):
         db.delete_record(zone, record_index)
-        build_zones(db.get_all_zones())
         return redirect("/records/" + zone)
     else:
         return redirect("/login")
