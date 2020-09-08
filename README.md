@@ -1,10 +1,8 @@
 # delivr
 Anycast CDN Orchestration Platform
 
-TODO:
-- zone validation
-- record type validation
-
+### Configuration
+delivr is configured with the `config.yml` file located in the root directory. Make sure to adjust the values to suit your deployment.
 
 ```yaml
 # Salt for Argon2 hashing
