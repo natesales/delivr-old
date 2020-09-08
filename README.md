@@ -4,8 +4,6 @@ Anycast CDN Orchestration Platform
 TODO:
 - zone validation
 - record type validation
-- Add serial field to zone doc
-- network.j2
 
 
 ```yaml
