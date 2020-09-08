@@ -1,7 +1,7 @@
 from datetime import timedelta
 from os import urandom
 
-from flask import Flask, session, render_template, request, redirect
+from flask import Flask, session, render_template, request, redirect, make_response
 from jinja2 import Template
 
 from lib.aggregator import build_zones
@@ -159,18 +159,27 @@ def delete_record(zone, record_index):
         return redirect("/login")
 
 
-@app.route("/install")
-def install():
+@app.route("/export/bird.conf")
+def export_bird_conf():
     with open("config/bird.j2", "r") as template_file:
-        bird_config = Template(template_file.read()).render(asn=configuration["asn"], ipv4_routes=configuration["ipv4_routes"], ipv6_routes=configuration["ipv6_routes"])
+        response = make_response(Template(template_file.read()).render(
+            asn=configuration["asn"],
+            ipv4_routes=configuration["ipv4_routes"],
+            ipv6_routes=configuration["ipv6_routes"]
+        ), 200)
+        response.mimetype = "text/plain"
+        return response
 
+
+@app.route("/export/network.sh")
+def export_network_sh():
     with open("config/network.j2", "r") as template_file:
-        network_config = Template(template_file.read()).render(edge_ips=configuration["edge_ips"])
+        response = make_response(Template(template_file.read()).render(edge_ips=configuration["edge_ips"]))
+        response.mimetype = "text/plain"
+        return response
 
-    return bird_config, network_config
 
-
-@app.route("/export")
+@app.route("/export/zones.json")
 def export():
     return build_zones(db.get_all_zones())
 
