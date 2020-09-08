@@ -21,16 +21,6 @@ if not os.path.exists("config.yml"):
 with open("config.yml", "r") as config_file:
     _config = yaml.safe_load(config_file.read())
 
-# Networking
-configuration["asn"] = _config["asn"]
-
-for route in _config["routes"]:
-    if ":" in route:
-        configuration["ipv6_routes"].append(route)
-    else:
-        configuration["ipv4_routes"].append(route)
-
-configuration["edge_ips"] = _config["edge-ips"]
 
 # Database
 configuration["database"] = _config["database"]
