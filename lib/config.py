@@ -44,3 +44,4 @@ configuration["development"] = _config["development"]
 
 # Site Specific
 configuration["nameservers"] = _config["nameservers"]
+configuration["soa_root"] = _config["soa-root"]

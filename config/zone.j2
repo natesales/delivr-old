@@ -1,12 +1,13 @@
 $TTL	86400
-@	IN	SOA  ns1.delivr.dev. root.delivr.dev. (
+@	IN	SOA  {{ nameservers[0] }}. {{ soa_root }}. (
          {{ serial }}     ; Serial
 			 604800		; Refresh
 			  86400		; Retry
 			2419200		; Expire
 			  86400 )	; Negative Cache TTL
-@	IN	NS	ns1.delivr.dev.
-@	IN	NS	ns2.delivr.dev.
+{% for nameserver in nameservers %}
+@	IN	NS	{{ nameserver }}.
+{% endfor %}
 
 {% for record in records -%}
 {{ record["domain"] }}    {{ record["ttl"] }}    IN    {{ record["type"] }}    {{ record["value"] }}
