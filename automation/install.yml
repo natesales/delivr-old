@@ -14,6 +14,7 @@
     - name: Install rsync, bind9, dnsutils
       apt:
         update_cache: yes
+        cache_valid_time: 36000 # 10 hours
         pkg:
           - rsync
           - bind9
@@ -53,14 +54,8 @@
         owner: bird
         group: bird
 
-    - name: Create unique BIRD2 config
-      copy:
-        content: define ROUTER_ID = {{ ansible_host }};
-        dest: /etc/bird/config.conf
-      register: bird_config
-
     - name: Copy BIRD2 config
-      copy:
+      template:
         src: ../source/bgp/bird.conf
         dest: /etc/bird/bird.conf
       register: bird_config
