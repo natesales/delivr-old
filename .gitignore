@@ -2,7 +2,7 @@
 .idea/
 
 source/*
-hosts
+automation/hosts
 config.yml
 
 automation/env/
