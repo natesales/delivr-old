@@ -1,5 +1,7 @@
 import ansible_runner
 
+from config import configuration
+
 
 def _get_ext_args(**kwargs):
     """
@@ -16,11 +18,18 @@ def _get_ext_args(**kwargs):
 
 
 r = ansible_runner.run(
-    private_data_dir=".",
+    private_data_dir="automation/",
     playbook="install.yml",
-    inventory="hosts",
     rotate_artifacts=1,
-    cmdline=_get_ext_args(ansible_port=34553, ansible_ssh_private_key_file="ssh-key", ansible_user="root"),
+    cmdline=_get_ext_args(
+        ansible_port=34553,
+        ansible_ssh_private_key_file="ssh-key",
+        ansible_user="root",
+
+        asn=configuration["asn"],
+        ipv4_routes=configuration["ipv4_routes"],
+        ipv6_routes=configuration["ipv6_routes"]
+    ),
 )
 
 # print("{}: {}".format(r.status, r.rc))
