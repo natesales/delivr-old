@@ -4,27 +4,27 @@ define ASN = {{ asn }};
 router id {{ ansible_host }};
 
 define LOCAL4 = [
-{%- for route in ipv4_routes %}
-  {{ route }}{% if loop.index != ipv4_routes|length %},{% endif %}
+{% for route in ipv4_routes.split("\n") %}
+  {{ route }}{% if loop.index > 0 and loop.index != ipv4_routes|length %},{% endif %}
 {%- endfor %}
 ];
 
 define LOCAL6 = [
-{%- for route in ipv6_routes %}
-  {{ route }}{% if loop.index != ipv6_routes|length %},{% endif %}
+{% for route in ipv6_routes.split("\n") %}
+  {{ route }}{% if loop.index > 0 and loop.index != ipv6_routes|length %},{% endif %}
 {%- endfor %}
 ];
 
 protocol static {
   ipv4;
-{%- for route in ipv4_routes %}
+{% for route in ipv4_routes.split("\n") %}
   route {{ route }} reject;
 {%- endfor %}
 }
 
 protocol static {
   ipv6;
-{%- for route in ipv6_routes %}
+{% for route in ipv6_routes.split("\n") %}
   route {{ route }} reject;
 {%- endfor %}
 }
