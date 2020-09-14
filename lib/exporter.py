@@ -28,10 +28,9 @@ def build_zones(zones):
 
 
 def build_nodes(nodes):
-    servers = "[nodes]\n"
+    servers = ""
     for server in nodes:
-        if server["operational"]:
-            servers += server["uid"] + " ansible_host=" + server["management"] + "\n"
+        servers += server["uid"] + " ansible_host=" + server["management"] + "\n"
 
-    with open("../hosts", "w") as hosts_file:
+    with open("automation/hosts", "w") as hosts_file:
         hosts_file.write(servers.strip())
