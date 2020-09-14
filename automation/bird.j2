@@ -1,6 +1,7 @@
 # bird.conf
 
 define ASN = {{ asn }};
+router id {{ ansible_host }};
 
 define LOCAL4 = [
 {%- for route in ipv4_routes %}
@@ -36,8 +37,6 @@ timeformat protocol iso long;
 timeformat route iso long;
 
 log "/etc/bird/log.txt" all;
-
-router id ROUTER_ID;
 
 protocol device {};
 
