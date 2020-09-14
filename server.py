@@ -158,7 +158,7 @@ def delete_record(zone, record_index):
         return redirect("/login")
 
 
-@app.route("/export/zones.json")
+@app.route("/export/zones")
 def export():
     return build_zones(db.get_all_zones())
 
@@ -173,7 +173,7 @@ def export():
 
 
 app.run(
-    host=configuration["server_host"],
-    port=configuration["server_port"],
+    host=configuration["server-host"],
+    port=configuration["server-port"],
     debug=configuration["development"]
 )

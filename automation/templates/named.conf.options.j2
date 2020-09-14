@@ -1,0 +1,7 @@
+options {
+    directory "/var/cache/bind";
+    recursion no;
+    listen-on-v6 { any; };
+    allow-transfer { none; };
+    version "PoP-Tag {{ ansible_hostname }}";
+};

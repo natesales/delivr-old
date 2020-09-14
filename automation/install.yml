@@ -65,15 +65,8 @@
       when: bird_config.changed
 
     - name: Create unique BIND config
-      copy:
-        content: |
-          options {
-          	directory "/var/cache/bind";
-          	recursion no;
-          	listen-on-v6 { any; };
-          	allow-transfer { none; };
-          	version "PoP-Tag {{ ansible_hostname }}";
-          };
+      template:
+        src: named.conf.options.j2
         dest: /etc/bind/named.conf.options
       register: bind_config
 
