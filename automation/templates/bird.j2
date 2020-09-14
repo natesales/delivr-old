@@ -5,12 +5,12 @@ router id {{ ansible_host }};
 
 protocol static static4 {
   ipv4;
-  {{ ipv4_prefix }}
+  route {{ ipv4_prefix }} reject;
 }
 
 protocol static static6 {
   ipv6;
-  {{ ipv6_prefix }}
+  route {{ ipv6_prefix }} reject;
 }
 
 # ---- Parameters ----
