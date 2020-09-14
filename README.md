@@ -29,9 +29,8 @@ soa-root: root.delivr.dev
 asn: 65000
 
 # Routes to announce
-routes:
-  - 192.0.2.0/24
-  - 2001:db8::/48
+ipv4_prefix: 192.0.2.0/24
+ipv6_prefix: 2001:db8::/48
 
 # Individual addresses to add to loopback for service daemons
 loopbacks:

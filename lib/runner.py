@@ -27,8 +27,8 @@ r = ansible_runner.run(
         ansible_user="root",
 
         asn=configuration["asn"],
-        ipv4_routes=configuration["ipv4_routes"],
-        ipv6_routes=configuration["ipv6_routes"]
+        ipv4_prefix=configuration["ipv4_prefix"],
+        ipv6_prefix=configuration["ipv6_prefix"]
     ),
 )
 

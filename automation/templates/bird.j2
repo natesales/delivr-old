@@ -3,30 +3,14 @@
 define ASN = {{ asn }};
 router id {{ ansible_host }};
 
-define LOCAL4 = [
-{% for route in ipv4_routes.split("\n") %}
-  {{ route }}{% if loop.index > 0 and loop.index != ipv4_routes|length %},{% endif %}
-{%- endfor %}
-];
-
-define LOCAL6 = [
-{% for route in ipv6_routes.split("\n") %}
-  {{ route }}{% if loop.index > 0 and loop.index != ipv6_routes|length %},{% endif %}
-{%- endfor %}
-];
-
-protocol static {
+protocol static static4 {
   ipv4;
-{% for route in ipv4_routes.split("\n") %}
-  route {{ route }} reject;
-{%- endfor %}
+  {{ ipv4_prefix }}
 }
 
-protocol static {
+protocol static static6 {
   ipv6;
-{% for route in ipv6_routes.split("\n") %}
-  route {{ route }} reject;
-{%- endfor %}
+  {{ ipv6_prefix }}
 }
 
 # ---- Parameters ----
@@ -166,7 +150,7 @@ function reject_bad() {
 # ---- Templates ----
 
 function export_filter() {
-    if (net ~ LOCAL4 || net ~ LOCAL6) then {
+    if (proto = "static4" || proto = "static6") then {
       bgp_community.add((ASN,110));
       accept;
     }
