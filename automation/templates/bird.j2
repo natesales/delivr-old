@@ -3,6 +3,14 @@
 define ASN = {{ asn }};
 router id {{ ansible_host }};
 
+define LOCAL4 = [
+  {{ ipv4_prefix }}
+];
+
+define LOCAL6 = [
+  {{ ipv6_prefix }}
+];
+
 protocol static static4 {
   ipv4;
   route {{ ipv4_prefix }} reject;
@@ -150,7 +158,7 @@ function reject_bad() {
 # ---- Templates ----
 
 function export_filter() {
-    if (proto = "static4" || proto = "static6") then {
+    if (net ~ LOCAL4 || net ~ LOCAL6) then {
       bgp_community.add((ASN,110));
       accept;
     }
