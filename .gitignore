@@ -1,5 +1,9 @@
 # IntelliJ configs
 .idea/
+
 source/*
 hosts
 config.yml
+
+automation/env/
+automation/artifacts/
